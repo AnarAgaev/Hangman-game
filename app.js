@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', () => {
         title        = document.querySelectorAll('#title span'),
         expectedWord = document.getElementById('word'),
         counter      = document.getElementById('counter'),
+        canvas       = document.getElementById('canvas'),
         word         = getRandomItemOfArray(words),
         answerArray  = setupAnswerArray(word),
         attempts     = 7,
@@ -18,6 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
     printInElement(expectedWord, answerArray.join(' ')); // Print question word
     sayLetter(document.getElementById('say-letter'));    // click on a button Say letter
     sayWord(document.getElementById('say-word'));        // click on a button Say word
+    drowPicture(canvas, attempts);                       // Drow picture with hangman
 
     // Click button for say gues letter
     function sayLetter(button) {
@@ -41,6 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
                     if (marker) {
                         attempts--;
+                        drowPicture(canvas, attempts);
                     } 
                 }
         
@@ -62,11 +65,13 @@ window.addEventListener('DOMContentLoaded', () => {
                     checkCycle();
                 } else if (gues == word) {
                     attempts--;
+                    drowPicture(canvas, attempts);
                     for (let i = 0; i < word.length; i++) {
                         answerArray[i] = gues[i];            
                     }
                 } else {
                     attempts--;
+                    drowPicture(canvas, attempts);
                 }
                 
                 printInElement(counter, attempts)
@@ -131,5 +136,53 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         
         console.log(new TypeError("Object isn't array!"));
+    }
+
+    // Drow picture
+    function drowPicture(canvas, item) {
+        let ctx = canvas.getContext('2d');
+
+        switch (item) {
+            case 7: // Drow gallows
+                ctx.fillStyle = 'black';
+                ctx.fillRect(50, 275, 200, 15);
+                ctx.fillRect(230, 25, 10, 250);
+                ctx.fillRect(120, 25, 110, 10);
+                ctx.fillRect(120, 30, 5, 40);
+                break;
+            case 6: // Drow head
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = '4';
+                ctx.beginPath();
+                ctx.arc(122, 83, 15, 0, Math.PI * 2, false);
+                ctx.stroke();
+                break;
+            case 5: // Draw shui
+                drowLine('5', [122, 100], [122, 110]);
+                break;
+            case 4: // Drow body
+                drowLine('10', [122, 110], [122, 170]);
+                break;
+            case 3: // Drow left hend
+                drowLine('4', [90, 100], [117, 112]);
+                break;
+            case 2: // Drow rgiht hend
+                drowLine('4', [154, 100], [127, 112]);
+                break;
+            case 1: // Draw a left leg
+                drowLine('4', [100, 210], [120, 169]);
+                break;
+            case 0: // Draw a right leg
+                drowLine('4', [144, 210], [124, 169]); 
+                break;
+        }
+
+        function drowLine(widht, from, to) {
+            ctx.beginPath();
+            ctx.lineWidth = widht;
+            ctx.moveTo(from[0], from[1]);
+            ctx.lineTo(to[0], to[1]);
+            ctx.stroke();
+        }
     }
 });
